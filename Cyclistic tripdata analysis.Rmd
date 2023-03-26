@@ -1,0 +1,41 @@
+---
+title: "Cyclistic tripdata analysis"
+author: "Ha Luong"
+date: "3/18/2023"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+setwd("~/Documents/Google_Data_Analytics/Course_8/Cyclistic_Trip_Data /Cyclistic_CSV_files")
+df <- read_csv("Cyclistic_df.csv")
+```
+
+# Analyze start hour throughout the week
+```{r}
+ggplot(data = df) +
+  geom_bar(mapping=aes(x = starting_hour, fill = member_casual)) +
+  facet_wrap(~day_of_week) +
+  labs(x = 'Starting hour', y = 'Number of rides', fill = 'Member type', title = 'Hourly use of bikes throughout the week') +
+  theme(axis.text = element_text(size = 5))
+ggsave("Hourly_use_of_bikes_throughout_the_week.png", dpi = 1000)
+```
+
+# Analyze daily usage
+```{r}
+df$day_of_week <- factor(df$day_of_week,
+  levels = c("Sun", "Mon", 
+  "Tue", "Wed", "Thu", "Fri", "Sat"))
+options(scipen = 999)
+ggplot(data = df) +
+  aes(x = day_of_week, fill = member_casual) +
+  geom_bar(position = 'dodge') +
+  labs(x = 'Day of week', y = 'Number of rides', fill = 'Member type', title = 'Number of rides by member type')
+ggsave("number_of_rides_by_member_type.png")
+```
+

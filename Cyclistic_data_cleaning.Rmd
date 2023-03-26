@@ -1,0 +1,115 @@
+---
+title: "Google Data Anaylystics Capstone Project"
+author: "Ha Luong"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages("skimr")
+library(skimr)
+#install.packages("janitor")
+library(janitor)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Open file and assign name to each files
+```{r}
+setwd("~/Documents/Google_Data_Analytics/Course_8/Cyclistic_Trip_Data /Cyclistic_CSV_files")
+Mar_2022 <- read_csv("2022_03.csv")
+Apr_2022 <- read_csv("2022_04.csv")
+May_2022 <- read_csv("2022_05.csv")
+Jun_2022 <- read_csv("2022_06.csv")
+Jul_2022 <- read_csv("2022_07.csv")
+Aug_2022 <- read_csv("2022_08.csv")
+Sep_2022 <- read_csv("2022_09.csv")
+Oct_2022 <- read_csv("2022_10.csv")
+Nov_2022 <- read_csv("2022_11.csv")
+Dec_2022 <- read_csv("2022_12.csv")
+Jan_2023 <- read_csv("2023_01.csv")
+Feb_2023 <- read_csv("2023_02.csv")
+```
+
+# Check for column name and format type
+```{r Check for column name and format type}
+str(Mar_2022)
+str(Apr_2022)
+str(May_2022)
+str(Jun_2022)
+str(Jul_2022)
+str(Aug_2022)
+str(Sep_2022)
+str(Oct_2022)
+str(Nov_2022)
+str(Dec_2022)
+str(Jan_2023)
+str(Feb_2023)
+```
+
+Combine 12 tables into 1 table called merged_df
+
+```{r Merge all datasets into one table}
+merged_df <- bind_rows(Mar_2022, Apr_2022, May_2022, Jun_2022, Jul_2022, Aug_2022, Sep_2022, Oct_2022, Nov_2022, Dec_2022, Jan_2023, Feb_2023)
+```
+
+# Create new column to analyze by different categories
+### Start hour
+```{r}
+merged_df$starting_hour <- format(as.POSIXct(merged_df$started_at), '%H')
+```
+### Day of the week
+```{r}
+merged_df$day_of_week <- wday(merged_df$started_at, label = T, abbr = T)
+```
+### Month
+```{r}
+merged_df$month <- format(as.Date(merged_df$started_at), '%m')
+```
+### Trip Duration
+```{r}
+merged_df$ride_length <- difftime(merged_df$ended_at, merged_df$started_at, units ='min')
+merged_df$ride_length <- as.numeric(merged_df$ride_length)
+```
+
+# Cleanning data
+### Check for format of new column
+```{r}
+str(merged_df)
+```
+### Summary of the data to see any inappropriate data
+```{r}
+summary(merged_df)
+```
+
+### Cleaning & removing any spaces, parentheses, etc in the column names
+```{r Cleaning & removing any spaces, parentheses, etc}
+merged_df <- clean_names(merged_df)
+```
+### Removing Duplicates
+```{r}
+merged_df %>%  distinct()
+```
+### Check for mean and sd of ride_length
+```{r}
+sd(merged_df$ride_length)
+mean(merged_df$ride_length)
+```
+### Remove any rows which have ride_length <= 0 and ride_length > 544.6 mins
+```{r}
+cleaned_df <- merged_df[!(merged_df$ride_length>544.6) & !(merged_df$ride_length<=0),]
+```
+
+### Summary of the cleaned data
+```{r}
+summary(cleaned_df)
+```
+# Save as new file for analysis
+
+```{r}
+cleaned_df %>%
+  write.csv("cyclistic_clean.csv")
+```
