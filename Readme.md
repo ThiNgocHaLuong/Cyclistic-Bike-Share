@@ -4,8 +4,7 @@ Hi everyone, I am in transition from university lecturer to data analyst. Over t
 
 Scenario: You are a data analyst working at Cyclistic, a bike-share company in Chicago. The director of marketing, Lily Moreno, believes the company’s future success depends on maximizing the number of annual memberships. Therefore, your team wants to understand how casual riders and annual members use Cyclistic bikes differently. From these insights, your team will design a new marketing strategy to convert casual riders into annual members. But first, Cyclistic executives must approve your recommendations, so they must be backed up with compelling data insights and professional data visualizations.
 
-Data used
-I will be using the public dataset called the divvy-tripdata located at: https://divvy-tripdata.s3.amazonaws.com/index.html. The data has been made available by MotivateInternational Inc. under this license https://ride.divvybikes.com/data-license-agreement. The bike trip data of the last 12 months from March 2022 till February 2023, stored in 12 csv files, is used for this study.
+Data used: I will be using the public dataset called the divvy-tripdata located at: https://divvy-tripdata.s3.amazonaws.com/index.html. The data has been made available by MotivateInternational Inc. under this license https://ride.divvybikes.com/data-license-agreement. The bike trip data of the last 12 months from March 2022 till February 2023, stored in 12 csv files, is used for this study.
 
 In this project folder, there will be 4 files: 
 - 02 R markdown files on data cleaning and data analysis
