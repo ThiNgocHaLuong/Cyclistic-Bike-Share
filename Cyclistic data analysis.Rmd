@@ -1,0 +1,98 @@
+---
+title: "Cyclistic tripdata analysis 2"
+author: "Ha Luong"
+date: "3/26/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+setwd("~/Documents/Google_Data_Analytics/Course_8/Cyclistic_Trip_Data /Cyclistic_CSV_files")
+df <- read_csv("cyclistic_clean.csv")
+```
+
+# Analyze the difference in bike usage between casual and annual members
+## Some statistics
+```{r}
+options(scipen = 999)
+ggplot(df, aes(x=member_casual, fill=member_casual)) +
+    geom_bar() +
+    geom_text(df,mapping = aes(label=..count..),stat = "count",position = "stack", vjust=-0.3) +
+    labs(x="Customer types", y="Total number of customers", title="Casuals and Members distribution") 
+```
+
+## Start hour throughout the week
+```{r}
+ggplot(data =df) +
+  geom_bar(mapping=aes(x = starting_hour, fill = member_casual)) +
+  facet_wrap(~day_of_week) +
+  labs(x = 'Starting hour', y = 'Number of rides', fill = 'Member type', title = 'Hourly use of bikes throughout the week') +
+  theme(axis.text = element_text(size = 5))
+ggsave("Hourly_use_of_bikes_throughout_the_week.png", dpi = 1000)
+```
+## Analyze daily usage 
+### We need to assign chronological order for the day of week so that the plot will show in chronological order. I use function "options(scipen = 999)" to extends the number of lines of printing so that the number of ride can be displayed in normal number intead of scientific number
+
+```{r}
+df$day_of_week <- factor(df$day_of_week, levels = c("Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"))
+options(scipen = 999)
+ggplot(data = df) +
+  aes(x = day_of_week, fill = member_casual) +
+  geom_bar(position = 'dodge') +
+  labs(x = 'Day of week', y = 'Number of rides', fill = 'Member type', title = 'Number of rides by member type during a week')
+ggsave("daily_ride_by_member_type.png")
+```
+## Analyze by monthly usagge
+```{r}
+options(scipen = 999)
+ggplot(data = df) +
+  aes(x = month, fill = member_casual) +
+  geom_bar(position = 'dodge') +
+  labs(x = 'Month', y = 'Number of rides', fill = 'Member type', title = 'Monthly rides by member type')
+ggsave("monthly_rides_by_member_type.png")
+```
+## Average trip duration by day of the week
+```{r}
+ggplot(df, aes(x = factor(day_of_week), y=ride_length)) + 
+  geom_bar(stat = "summary", fun = "mean", fill="#56B4E9") +
+  facet_wrap(~member_casual)+
+  labs(x = 'Day of week', y = 'Average ride length (min)', fill = 'Member type', title = 'Average ride length by day of the week')
+ggsave("Ride_length.png")
+```
+## Average trip duration by month
+```{r}
+ggplot(df, aes(x = factor(month), y=ride_length)) + 
+  geom_bar(stat = "summary", fun = "mean", fill="#56B4E9") +
+  facet_wrap(~member_casual)+
+  labs(x = 'Month', y = 'Average ride length (min)', fill = 'Member type', title = 'Average ride length by month')
+ggsave("Ride_length_by_month.png")
+```
+## Average temparature of Chicago (Chicago average daily mean tempreture (Midway Airport), 1991–2020 normals is from: https://en.wikipedia.org/wiki/Climate_of_Chicago)
+```{r}
+chicago_mean_temp <- c(-3.2, -1.2, 4.4, 10.5, 16.6, 22.2, 24.8, 23.9, 19.9, 12.9, 5.8, -0.3)
+month <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+chicago_temp_df <- data.frame(chicago_mean_temp, month)
+chicago_temp_df$month <- factor(chicago_temp_df$month, levels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
+ggplot(chicago_temp_df, aes(x=month, y=chicago_mean_temp)) +
+    labs(x="Month", y="Mean temperature", title="Daily mean temperature for Chicago (1991-2020) in Celsius") +
+    geom_col(, fill="#56B4E9")
+ggsave("chicago_daily_temp.png")
+```
+## Analyze by start station and end station
+### Number of rides by start station
+```{r}
+library(dplyr)
+library(data.table)
+df1 <- df %>% group_by(start_station_name, member_casual) %>% tally(sort = TRUE)
+df1<- na.omit(df1)
+setDT(df1)
+df1[, as.list(summary(n)), by = member_casual]
+```
+### Number of rides by end station
+```{r}
+df2 <- df %>% group_by(end_station_name, member_casual) %>% tally(sort = TRUE)
+df2<- na.omit(df2)
+setDT(df2)
+df2[, as.list(summary(n)), by = member_casual]
+```
